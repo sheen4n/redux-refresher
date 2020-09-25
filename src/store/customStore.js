@@ -24,6 +24,5 @@ const createStore = (reducer) => {
 };
 
 export default function configureStore() {
-  const store = createStore(reducer);
-  return store;
+  return createStore(reducer);
 }
