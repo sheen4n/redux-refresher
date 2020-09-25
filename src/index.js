@@ -1,6 +1,7 @@
 import configureCustomStore from './store/customStore';
 import configureReduxStore from './store/configureStore';
-import { bugAdded, bugRemoved, bugResolved } from './store/bugs';
+// import { bugAdded, bugRemoved, bugResolved } from './store/bugs';
+import { projectAdded } from './store/projects';
 
 const USE_CUSTOM_STORE = false;
 let store;
@@ -15,14 +16,16 @@ const unsubscribe = store.subscribe(() => {
   console.log('Store changed', store.getState());
 });
 
-store.dispatch(bugAdded({ description: 'First Bug' }));
-store.dispatch(bugAdded({ description: '2 Bug' }));
-store.dispatch(bugAdded({ description: '3 Bug' }));
-store.dispatch(bugAdded({ description: '4 Bug' }));
+store.dispatch(projectAdded({ name: 'First Bug' }));
 
-store.dispatch(bugResolved({ id: 1 }));
-store.dispatch(bugResolved({ id: 2 }));
-unsubscribe();
-store.dispatch(bugRemoved({ id: 1 }));
+// store.dispatch(bugAdded({ description: 'First Bug' }));
+// store.dispatch(bugAdded({ description: '2 Bug' }));
+// store.dispatch(bugAdded({ description: '3 Bug' }));
+// store.dispatch(bugAdded({ description: '4 Bug' }));
 
-console.log(store.getState());
+// store.dispatch(bugResolved({ id: 1 }));
+// store.dispatch(bugResolved({ id: 2 }));
+// unsubscribe();
+// store.dispatch(bugRemoved({ id: 1 }));
+
+// console.log(store.getState());
