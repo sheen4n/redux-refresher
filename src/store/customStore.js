@@ -1,4 +1,4 @@
-import reducer from './reducer';
+import reducer from './bugs';
 
 const createStore = (reducer) => {
   let state;
@@ -23,6 +23,7 @@ const createStore = (reducer) => {
   };
 };
 
-const store = createStore(reducer);
-
-export default store;
+export default function configureStore() {
+  const store = createStore(reducer);
+  return store;
+}

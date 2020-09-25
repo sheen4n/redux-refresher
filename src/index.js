@@ -1,14 +1,14 @@
-import customStore from './customStore';
-import reduxStore from './store';
-import { bugAdded, bugRemoved, bugResolved } from './actions';
+import configureCustomStore from './store/customStore';
+import configureReduxStore from './store/configureStore';
+import { bugAdded, bugRemoved, bugResolved } from './store/bugs';
 
 const USE_CUSTOM_STORE = false;
 let store;
 
 if (!USE_CUSTOM_STORE) {
-  store = reduxStore;
+  store = configureReduxStore();
 } else {
-  store = customStore;
+  store = configureCustomStore();
 }
 
 const unsubscribe = store.subscribe(() => {
