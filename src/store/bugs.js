@@ -1,34 +1,30 @@
-import { createAction } from '@reduxjs/toolkit';
-
-// Action Creators
-export const bugAdded = createAction('bugAdded');
-export const bugRemoved = createAction('bugRemoved');
-export const bugResolved = createAction('bugResolved');
+import { createSlice } from '@reduxjs/toolkit';
 
 // Reducer
 let lastId = 0;
 
-const reducer = (state = [], action) => {
-  switch (action.type) {
-    case bugAdded.type:
-      return [
-        ...state,
-        {
-          id: ++lastId,
-          description: action.payload.description,
-          resolved: false,
-        },
-      ];
+// uses immer under the hood for mutable code
+const slice = createSlice({
+  name: 'bugs',
+  initialState: [],
+  reducers: {
+    bugAdded: (state, action) => {
+      state.push({
+        id: ++lastId,
+        description: action.payload.description,
+        resolved: false,
+      });
+    },
+    bugResolved: (state, action) => {
+      const index = state.findIndex((bug) => bug.id === action.payload.id);
+      state[index].resolved = true;
+    },
+    bugRemoved: (state, action) => {
+      const index = state.findIndex((bug) => bug.id === action.payload.id);
+      state.splice(index, 1);
+    },
+  },
+});
 
-    case bugRemoved.type:
-      return state.filter((bug) => bug.id !== action.payload.id);
-
-    case bugResolved.type:
-      return state.map((bug) => (bug.id !== action.payload.id ? bug : { ...bug, resolved: true }));
-
-    default:
-      return state;
-  }
-};
-
-export default reducer;
+export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
+export default slice.reducer;
