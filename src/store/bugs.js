@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
 
 // Reducer
 let lastId = 0;
@@ -28,3 +29,19 @@ const slice = createSlice({
 
 export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
 export default slice.reducer;
+
+// selectors to encapuslate logic to get computed state without memoization
+// export const getUnresolvedBugs = (state) => state.entities.bugs.filter((bug) => !bug.resolved);
+
+// Memoization to optimize selectors
+export const getUnresolvedBugs = createSelector(
+  (state) => state.entities.bugs,
+  (bugs) => bugs.filter((bug) => !bug.resolved),
+);
+
+// Memoized example 2 (just silly example)
+export const getItemsWithIdOne = createSelector(
+  (state) => state.entities.bugs,
+  (state) => state.entities.projects,
+  (bugs, projects) => [...bugs, ...projects].filter((item) => item.id === 1),
+);
