@@ -4,3 +4,5 @@ const func = ({ dispatch, getState }) => (next) => (action) => {
 };
 
 export default func;
+
+// not in use as thunk automatically uses it

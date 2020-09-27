@@ -9,8 +9,11 @@ import {
   getListOfBugsAssignedToUser,
   getUnresolvedBugs,
 } from './store/bugs';
+
+// Action Types
 import { projectAdded } from './store/projects';
 import { userAdded } from './store/users';
+import { apiCallBegan } from './store/api';
 
 const USE_CUSTOM_STORE = false;
 let store;
@@ -21,9 +24,9 @@ if (!USE_CUSTOM_STORE) {
   store = configureCustomStore();
 }
 
-const unsubscribe = store.subscribe(() => {
-  console.log('Store changed', store.getState());
-});
+// const unsubscribe = store.subscribe(() => {
+//   console.log('Store changed', store.getState());
+// });
 
 store.dispatch(userAdded({ name: 'User 1' }));
 // store.dispatch(userAdded({ name: 'User 2' }));
@@ -67,4 +70,16 @@ store.dispatch((dispatch, getState) => {
 
 // store.dispatch(inside here is an action. action usually are objects with type property. above shows that action is a function instead of object for async)
 
-store.dispatch({ type: 'error', payload: { message: 'An error occurred' } });
+// Test if action is error. If error, toastify and log
+// store.dispatch({ type: 'error', payload: { message: 'An error occurred' } });
+
+// Instead of using thunk, we can use custom Api Middleware. Thunk disadvantage is that the code is above as above, where we need to write the api + dispatch if resolved/ rejected everytime
+
+// API Middleware usage example
+
+store.dispatch(
+  apiCallBegan({
+    url: '/bugs',
+    onSuccess: 'bugsReceived',
+  }),
+);
