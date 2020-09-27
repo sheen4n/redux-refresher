@@ -1,11 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
 import { apiCallBegan } from './api';
+import moment from 'moment';
 
 // ------
 // Reducers
-let lastId = 0;
-
 // uses immer under the hood for mutable code
 const slice = createSlice({
   name: 'bugs',
@@ -15,15 +14,14 @@ const slice = createSlice({
     lastFetch: null,
   },
   reducers: {
+    // command - event
+    // addBug - bugAdded
     bugAdded: (state, action) => {
-      state.list.push({
-        id: ++lastId,
-        description: action.payload.description,
-        resolved: false,
-      });
+      state.list.push(action.payload); //Payload comes from the response of the server after added
     },
     bugResolved: (state, action) => {
       const index = state.list.findIndex((bug) => bug.id === action.payload.id);
+      console.log(action);
       state.list[index].resolved = true;
     },
     bugRemoved: (state, action) => {
@@ -31,13 +29,14 @@ const slice = createSlice({
       state.list.splice(index, 1);
     },
     bugAssigned: (state, action) => {
-      const { bugId, userId } = action.payload;
+      const { id: bugId, userId } = action.payload;
       const index = state.list.findIndex((bug) => bug.id === bugId);
       state.list[index].userId = userId;
     },
     bugsReceived: (state, action) => {
       state.list = action.payload;
       state.loading = false;
+      state.lastFetch = Date.now();
     },
     bugsRequested: (state, action) => {
       state.loading = true;
@@ -66,12 +65,60 @@ const url = '/bugs';
 
 // ------
 // Action Creators
-export const loadBugs = () =>
+
+// Original Action Creator
+// Creates an action object
+// Signature () => {}
+// export const loadBugs = () =>
+//   apiCallBegan({
+//     url,
+//     onStart: bugsRequested.type,
+//     onSuccess: bugsReceived.type,
+//     onError: bugsRequestFail.type,
+//   });
+
+// Upgraded Signature () => fn(dispatch, getState)
+// Why upgrade? So we can use thunk. Thunk can take in function with fn(dispatch, getState) signature so we can have logic
+export const loadBugs = () => (dispatch, getState) => {
+  // Implement Caching, can abstract to a generalized solution if want to use in multiple slices
+  const { lastFetch } = getState().entities.bugs;
+  const diffInMinutes = moment().diff(moment(lastFetch), 'minutes');
+  const validTimeframeInMinutes = 10; // Can be a Config value
+  if (diffInMinutes < validTimeframeInMinutes) return;
+
+  dispatch(
+    apiCallBegan({
+      url,
+      onStart: bugsRequested.type,
+      onSuccess: bugsReceived.type,
+      onError: bugsRequestFail.type,
+    }),
+  );
+};
+
+// Do not need complex example like thunk above because no caching logic needed.
+export const addBug = (bug) =>
   apiCallBegan({
     url,
-    onStart: bugsRequested.type,
-    onSuccess: bugsReceived.type,
-    onError: bugsRequestFail.type,
+    method: 'post',
+    data: bug,
+    onSuccess: bugAdded.type,
+  });
+
+export const resolveBug = (id) =>
+  apiCallBegan({
+    url: `${url}/${id}`,
+    method: 'patch',
+    data: { resolved: true },
+    onSuccess: bugResolved.type,
+  });
+
+export const assignBugToUser = ({ bugId, userId }) =>
+  apiCallBegan({
+    url: `${url}/${bugId}`,
+    method: 'patch',
+    data: { userId },
+    onSuccess: bugAssigned.type,
   });
 
 // ------
