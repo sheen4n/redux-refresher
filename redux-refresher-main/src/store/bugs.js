@@ -1,7 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
+import { apiCallBegan } from './api';
 
-// Reducer
+// ------
+// Reducers
 let lastId = 0;
 
 // uses immer under the hood for mutable code
@@ -33,12 +35,46 @@ const slice = createSlice({
       const index = state.list.findIndex((bug) => bug.id === bugId);
       state.list[index].userId = userId;
     },
+    bugsReceived: (state, action) => {
+      state.list = action.payload;
+      state.loading = false;
+    },
+    bugsRequested: (state, action) => {
+      state.loading = true;
+    },
+    bugsRequestFail: (state, action) => {
+      state.loading = false;
+    },
   },
 });
 
-export const { bugAdded, bugResolved, bugRemoved, bugAssigned } = slice.actions;
+export const {
+  bugAdded,
+  bugResolved,
+  bugRemoved,
+  bugAssigned,
+  bugsReceived,
+  bugsRequested,
+  bugsRequestFail,
+} = slice.actions;
 export default slice.reducer;
 
+// ------
+// Configurations - Can be put in separate file
+
+const url = '/bugs';
+
+// ------
+// Action Creators
+export const loadBugs = () =>
+  apiCallBegan({
+    url,
+    onStart: bugsRequested.type,
+    onSuccess: bugsReceived.type,
+    onError: bugsRequestFail.type,
+  });
+
+// ------
 // selectors to encapuslate logic to get computed state without memoization
 // export const getUnresolvedBugs = (state) => state.entities.bugs.filter((bug) => !bug.resolved);
 

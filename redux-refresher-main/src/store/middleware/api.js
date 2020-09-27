@@ -2,28 +2,29 @@ import axios from 'axios';
 import { apiCallBegan, apiCallFailed, apiCallSuccess } from '../api';
 
 const api = ({ dispatch, store }) => (next) => async (action) => {
-  next(action);
+  if (action.type !== apiCallBegan.type) return next(action);
+  const { url, method, data, onSuccess, onStart, onError } = action.payload;
 
-  if (action.type !== apiCallBegan.type) return;
+  if (onStart) dispatch({ type: onStart });
 
-  const { url, method, data, onSuccess, onError } = action.payload;
+  next(action); // Still goes to next even if is apiCall or Not
 
   try {
     const response = await axios.request({
-      baseURL: 'http://localhost:9001/api',
+      baseURL: 'http://localhost:9001/api', // should put this in a configuratio file
       url,
       method,
       data,
     });
 
     // General Success Scenario, do not need to specify when calling the api
-    dispatch(apiCallSuccess(response.data));
+    dispatch(apiCallSuccess(response.data)); // Not attached to any reducers
 
     // Specific Success Handling
     if (onSuccess) dispatch({ type: onSuccess, payload: response.data });
   } catch (error) {
     // General Error Handling
-    dispatch(apiCallFailed(error));
+    dispatch(apiCallFailed(error.message)); // Not attached to any reducers
 
     // Specific Error Handling
     if (onError) dispatch({ type: onError, payload: error });
