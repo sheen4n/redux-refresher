@@ -8,18 +8,23 @@ import configureStore from '../configureStore';
 // Assert
 
 describe('bugsSlice', () => {
-  it('shoud handle the addBug action', async () => {
-    // Arrange
+  let fakeAxios;
+  let store;
+
+  beforeEach(() => {
+    fakeAxios = new MockAdapter(axios);
+    store = configureStore();
+  });
+
+  const bugsSlice = () => store.getState().entities.bugs;
+
+  it('should add the bug to the store if it is saved to the server', async () => {
     const bug = { description: 'a' };
     const savedBug = { ...bug, id: 1 };
-    const fakeAxios = new MockAdapter(axios);
     fakeAxios.onPost('/bugs').reply(200, savedBug);
-    const store = configureStore();
 
-    // Act
     await store.dispatch(addBug(bug));
 
-    // Assert
-    expect(store.getState().entities.bugs.list).toContainEqual(savedBug);
+    expect(bugsSlice().list).toContainEqual(savedBug);
   });
 });
