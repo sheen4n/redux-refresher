@@ -1,4 +1,4 @@
-import reducer from './bugs';
+import reducer from './reducer';
 
 const createStore = (reducer) => {
   let state;
