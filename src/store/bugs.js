@@ -24,10 +24,15 @@ const slice = createSlice({
       const index = state.findIndex((bug) => bug.id === action.payload.id);
       state.splice(index, 1);
     },
+    bugAssigned: (state, action) => {
+      const { bugId, userId } = action.payload;
+      const index = state.findIndex((bug) => bug.id === bugId);
+      state[index].userId = userId;
+    },
   },
 });
 
-export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
+export const { bugAdded, bugResolved, bugRemoved, bugAssigned } = slice.actions;
 export default slice.reducer;
 
 // selectors to encapuslate logic to get computed state without memoization
@@ -45,3 +50,10 @@ export const getItemsWithIdOne = createSelector(
   (state) => state.entities.projects,
   (bugs, projects) => [...bugs, ...projects].filter((item) => item.id === 1),
 );
+
+// Memoize Example 3
+export const getListOfBugsAssignedToUser = (userId) =>
+  createSelector(
+    (state) => state.entities.bugs,
+    (bugs) => bugs.filter((bug) => bug.userId === userId),
+  );

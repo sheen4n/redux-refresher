@@ -4,10 +4,13 @@ import {
   bugAdded,
   bugRemoved,
   bugResolved,
+  bugAssigned,
   getItemsWithIdOne,
+  getListOfBugsAssignedToUser,
   getUnresolvedBugs,
 } from './store/bugs';
 import { projectAdded } from './store/projects';
+import { userAdded } from './store/users';
 
 const USE_CUSTOM_STORE = false;
 let store;
@@ -21,6 +24,10 @@ if (!USE_CUSTOM_STORE) {
 const unsubscribe = store.subscribe(() => {
   console.log('Store changed', store.getState());
 });
+
+store.dispatch(userAdded({ name: 'User 1' }));
+store.dispatch(userAdded({ name: 'User 2' }));
+store.dispatch(userAdded({ name: 'User 3' }));
 
 store.dispatch(projectAdded({ name: 'First Project' }));
 
@@ -43,3 +50,8 @@ console.log(a);
 
 const c = getUnresolvedBugs(store.getState());
 console.log(c);
+
+store.dispatch(bugAssigned({ bugId: 3, userId: 1 }));
+
+const d = getListOfBugsAssignedToUser(1)(store.getState());
+console.log(d);
