@@ -86,7 +86,7 @@ export const loadBugs = () => (dispatch, getState) => {
   const validTimeframeInMinutes = 10; // Can be a Config value
   if (diffInMinutes < validTimeframeInMinutes) return;
 
-  dispatch(
+  return dispatch(
     apiCallBegan({
       url,
       onStart: bugsRequested.type,
