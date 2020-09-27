@@ -1,22 +1,10 @@
 import configureCustomStore from './store/customStore';
 import configureReduxStore from './store/configureStore';
-import {
-  bugAdded,
-  bugRemoved,
-  bugResolved,
-  bugAssigned,
-  getItemsWithIdOne,
-  getListOfBugsAssignedToUser,
-  getUnresolvedBugs,
-  loadBugs,
-  addBug,
-  resolveBug,
-  assignBugToUser,
-} from './store/bugs';
+import { loadBugs, addBug, resolveBug, assignBugToUser } from './store/bugs';
 
 // Action Types
-import { projectAdded } from './store/projects';
-import { userAdded } from './store/users';
+// import { projectAdded } from './store/projects';
+// import { userAdded } from './store/users';
 
 const USE_CUSTOM_STORE = false;
 let store;
