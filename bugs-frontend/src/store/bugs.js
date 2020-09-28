@@ -24,10 +24,6 @@ const slice = createSlice({
       console.log(action);
       state.list[index].resolved = true;
     },
-    bugRemoved: (state, action) => {
-      const index = state.list.findIndex((bug) => bug.id === action.payload.id);
-      state.list.splice(index, 1);
-    },
     bugAssigned: (state, action) => {
       const { id: bugId, userId } = action.payload;
       const index = state.list.findIndex((bug) => bug.id === bugId);
@@ -50,7 +46,6 @@ const slice = createSlice({
 const {
   bugAdded,
   bugResolved,
-  bugRemoved,
   bugAssigned,
   bugsReceived,
   bugsRequested,
