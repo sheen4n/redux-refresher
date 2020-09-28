@@ -9,6 +9,8 @@ const BugsList = () => {
   // useSelector(state => state.entities.bugs.list)
   const unresolvedBugs = useSelector(getUnresolvedBugs);
 
+  const handleResolve = (bugId) => () => dispatch(resolveBug(bugId));
+
   useEffect(() => {
     dispatch(loadBugs());
   }, [dispatch]);
@@ -20,7 +22,7 @@ const BugsList = () => {
         {unresolvedBugs.map((bug) => (
           <li key={bug.id}>
             {bug.description}
-            <button onClick={() => dispatch(resolveBug(bug.id))}>Resolve Bug</button>
+            <button onClick={handleResolve(bug.id)}>Resolve Bug</button>
           </li>
         ))}
       </ul>
